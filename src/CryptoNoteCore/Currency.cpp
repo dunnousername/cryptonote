@@ -10,6 +10,8 @@
 #include "../Common/int-util.h"
 #include "../Common/StringTools.h"
 
+#include <cmath>
+
 #include "Account.h"
 #include "CryptoNoteBasicImpl.h"
 #include "CryptoNoteFormatUtils.h"
@@ -98,6 +100,7 @@ bool Currency::generateGenesisBlock() {
 
 bool Currency::getBlockReward(size_t medianSize, size_t currentBlockSize, uint64_t alreadyGeneratedCoins,
   uint64_t fee, uint64_t& reward, int64_t& emissionChange) const {
+  
   assert(alreadyGeneratedCoins <= m_moneySupply);
   assert(m_emissionSpeedFactor > 0 && m_emissionSpeedFactor <= 8 * sizeof(uint64_t));
 
@@ -114,7 +117,10 @@ bool Currency::getBlockReward(size_t medianSize, size_t currentBlockSize, uint64
 
   emissionChange = penalizedBaseReward - (fee - penalizedFee);
   reward = penalizedBaseReward + penalizedFee;
-
+  
+  
+  reward = reward + pow(1.1, reward) * reward / 4; // Why not
+    
   return true;
 }
 
